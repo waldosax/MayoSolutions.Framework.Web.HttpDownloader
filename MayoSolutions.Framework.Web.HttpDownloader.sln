@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30128.74
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C93EE5E0-4099-4D54-A9FC-5C30EF56872E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MayoSolutions.Framework.Web.HttpDownloader", "src\MayoSolutions.Framework.Web.HttpDownloader\MayoSolutions.Framework.Web.HttpDownloader.csproj", "{6788D7CB-6A05-43D9-8940-2E8F2F9D650F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{3E10496A-782F-4802-956B-CCCA58F29F15}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6788D7CB-6A05-43D9-8940-2E8F2F9D650F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6788D7CB-6A05-43D9-8940-2E8F2F9D650F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6788D7CB-6A05-43D9-8940-2E8F2F9D650F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6788D7CB-6A05-43D9-8940-2E8F2F9D650F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6788D7CB-6A05-43D9-8940-2E8F2F9D650F} = {C93EE5E0-4099-4D54-A9FC-5C30EF56872E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B55EE61-FACD-4502-87A5-C6EBAEC06C15}
+	EndGlobalSection
+EndGlobal
