@@ -4,8 +4,8 @@
 	  <TargetFrameworks>netstandard2.0;netstandard2.1;net471;net472;net48;net5.0</TargetFrameworks>
 	  <Company>Mayo Solutions</Company>
 	  <Authors>Rob Mayo</Authors>
-	  <Description>Abstractions for Filesystem</Description>
-	  <Version>0.0.4</Version>
+	  <Description>Abstractions for making HTTP requests.</Description>
+	  <Version>0.0.5</Version>
 	  <PackageVersion>$(VersionSuffix)</PackageVersion>
 	  <PackageId>MayoSolutions.Framework.Web.HttpDownloader</PackageId>
 	  <Title>MayoSolutions.Framework.Web.HttpDownloader</Title>
