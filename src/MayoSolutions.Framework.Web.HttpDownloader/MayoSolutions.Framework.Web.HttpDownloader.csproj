@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+	  <TargetFrameworks>netstandard2.0;netstandard2.1;net471;net472;net48;net5.0</TargetFrameworks>
 	  <Company>Mayo Solutions</Company>
 	  <Authors>Rob Mayo</Authors>
 	  <Description>Abstractions for Filesystem</Description>
-	  <Version>0.0.3</Version>
+	  <Version>0.0.4</Version>
 	  <PackageVersion>$(VersionSuffix)</PackageVersion>
 	  <PackageId>MayoSolutions.Framework.Web.HttpDownloader</PackageId>
 	  <Title>MayoSolutions.Framework.Web.HttpDownloader</Title>
@@ -23,7 +23,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="10.2.1" />
-		<PackageReference Include="MayoSolutions.Common" Version="0.0.13" />
+		<PackageReference Include="MayoSolutions.Common" Version="0.0.14" />
 	</ItemGroup>
 
 </Project>
