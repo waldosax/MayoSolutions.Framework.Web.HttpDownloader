@@ -26,6 +26,27 @@ namespace MayoSolutions.Framework.Web
 
         Task<string> PostStringAsync(
             string url,
+            IDictionary<string, string> form,
+            IDictionary<string, string> headers = null,
+            IWebProxy proxy = null
+        );
+
+        Task<Stream> PostStreamAsync(
+            string url,
+            IDictionary<string, string> form,
+            IDictionary<string, string> headers = null,
+            IWebProxy proxy = null
+        );
+
+        Task<byte[]> PostBytesAsync(
+            string url,
+            IDictionary<string, string> form,
+            IDictionary<string, string> headers = null,
+            IWebProxy proxy = null
+        );
+
+        Task<string> PostStringAsync(
+            string url,
             string body,
             IDictionary<string, string> headers = null,
             IWebProxy proxy = null

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -19,7 +20,7 @@ namespace MayoSolutions.Framework.Web
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsStringAsync(),
-                null, headers, proxy);
+                null, null, headers, proxy);
         }
 
         public async Task<Stream> GetStreamAsync(
@@ -30,7 +31,7 @@ namespace MayoSolutions.Framework.Web
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsStreamAsync(),
-                null, headers, proxy);
+                null, null, headers, proxy);
         }
 
         public async Task<byte[]> GetBytesAsync(
@@ -41,7 +42,7 @@ namespace MayoSolutions.Framework.Web
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsByteArrayAsync(),
-                null, headers, proxy);
+                null, null, headers, proxy);
         }
 
         public async Task<string> PostStringAsync(
@@ -53,7 +54,7 @@ namespace MayoSolutions.Framework.Web
         {
             return await MakeRequestAsync(HttpMethod.Post, url,
                 response => response.Content.ReadAsStringAsync(),
-                body, headers, proxy);
+                body, null, headers, proxy);
         }
 
         public async Task<Stream> PostStreamAsync(
@@ -65,7 +66,7 @@ namespace MayoSolutions.Framework.Web
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsStreamAsync(),
-                body, headers, proxy);
+                body, null, headers, proxy);
         }
 
         public async Task<byte[]> PostBytesAsync(
@@ -77,7 +78,43 @@ namespace MayoSolutions.Framework.Web
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsByteArrayAsync(),
-                body, headers, proxy);
+                body, null, headers, proxy);
+        }
+
+        public async Task<string> PostStringAsync(
+            string url,
+            IDictionary<string, string> form,
+            IDictionary<string, string> headers = null,
+            IWebProxy proxy = null
+        )
+        {
+            return await MakeRequestAsync(HttpMethod.Post, url,
+                response => response.Content.ReadAsStringAsync(),
+                null, form, headers, proxy);
+        }
+
+        public async Task<Stream> PostStreamAsync(
+            string url,
+            IDictionary<string, string> form,
+            IDictionary<string, string> headers = null,
+            IWebProxy proxy = null
+        )
+        {
+            return await MakeRequestAsync(HttpMethod.Get, url,
+                response => response.Content.ReadAsStreamAsync(),
+                null, form, headers, proxy);
+        }
+
+        public async Task<byte[]> PostBytesAsync(
+            string url,
+            IDictionary<string, string> form,
+            IDictionary<string, string> headers = null,
+            IWebProxy proxy = null
+        )
+        {
+            return await MakeRequestAsync(HttpMethod.Get, url,
+                response => response.Content.ReadAsByteArrayAsync(),
+                null, form, headers, proxy);
         }
 
         private async Task<T> MakeRequestAsync<T>(
@@ -85,6 +122,7 @@ namespace MayoSolutions.Framework.Web
             string url,
             Func<HttpResponseMessage, Task<T>> handleResponse,
             string body = null,
+            IDictionary<string, string> form = null,
             IDictionary<string, string> headers = null,
             IWebProxy proxy = null
             )
@@ -96,16 +134,20 @@ namespace MayoSolutions.Framework.Web
                 using (HttpRequestMessage request = new HttpRequestMessage(method, url))
                 {
                     ConvertHeaders(request, headers);
+                    HttpContent content = null;
                     if (method == HttpMethod.Post || method == HttpMethod.Put)
                     {
-                        string contentType = headers?.ContainsKey("content-type") == true
-                            ? headers["content-type"]
+                        string contentTypeKey = headers?.Keys.FirstOrDefault(k => string.Equals("Content-Type", k));
+                        string contentType = !string.IsNullOrEmpty(contentTypeKey)
+                            ? headers[contentTypeKey]
                             : null;
-                        StringContent content = new StringContent(body, null, contentType);
-                        request.Content = content;
+                        if (contentType?.IndexOf("json", StringComparison.OrdinalIgnoreCase) >= 0)
+                            content = new StringContent(body, null, contentType);
+                        else
+                            content = new FormUrlEncodedContent(form);
                     }
+                    request.Content = content;
 
-                    // TODO: httpClient.PostAsync
                     using (HttpResponseMessage response = await httpClient.SendAsync(request))
                     {
                         return await handleResponse(response);
