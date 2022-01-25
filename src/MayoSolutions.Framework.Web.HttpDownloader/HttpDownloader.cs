@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MayoSolutions.Framework.Web
@@ -15,106 +16,136 @@ namespace MayoSolutions.Framework.Web
         public async Task<string> GetStringAsync(
             string url,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsStringAsync(),
-                null, null, headers, proxy);
+                null, null, headers, proxy, cancellationToken);
         }
 
         public async Task<Stream> GetStreamAsync(
             string url,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
-                response => response.Content.ReadAsStreamAsync(),
-                null, null, headers, proxy);
+                async response => 
+                {
+                    MemoryStream copy = new MemoryStream();
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    await stream.CopyToAsync(copy, 1024, cancellationToken);
+                    copy.Position = 0L;
+                    return copy;
+                },
+                null, null, headers, proxy, cancellationToken);
         }
 
         public async Task<byte[]> GetBytesAsync(
             string url,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
                 response => response.Content.ReadAsByteArrayAsync(),
-                null, null, headers, proxy);
+                null, null, headers, proxy, cancellationToken);
         }
 
         public async Task<string> PostStringAsync(
             string url,
             string body,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
             return await MakeRequestAsync(HttpMethod.Post, url,
                 response => response.Content.ReadAsStringAsync(),
-                body, null, headers, proxy);
+                body, null, headers, proxy, cancellationToken);
         }
 
         public async Task<Stream> PostStreamAsync(
             string url,
             string body,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
-            return await MakeRequestAsync(HttpMethod.Get, url,
-                response => response.Content.ReadAsStreamAsync(),
-                body, null, headers, proxy);
+            return await MakeRequestAsync(HttpMethod.Post, url,
+               async response =>
+               {
+                   MemoryStream copy = new MemoryStream();
+                   var stream = await response.Content.ReadAsStreamAsync();
+                   await stream.CopyToAsync(copy, 1024, cancellationToken);
+                   copy.Position = 0L;
+                   return copy;
+               },
+               body, null, headers, proxy, cancellationToken);
         }
 
         public async Task<byte[]> PostBytesAsync(
             string url,
             string body,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
-            return await MakeRequestAsync(HttpMethod.Get, url,
+            return await MakeRequestAsync(HttpMethod.Post, url,
                 response => response.Content.ReadAsByteArrayAsync(),
-                body, null, headers, proxy);
+                body, null, headers, proxy, cancellationToken);
         }
 
         public async Task<string> PostStringAsync(
             string url,
             IDictionary<string, string> form,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
             return await MakeRequestAsync(HttpMethod.Post, url,
                 response => response.Content.ReadAsStringAsync(),
-                null, form, headers, proxy);
+                null, form, headers, proxy, cancellationToken);
         }
 
         public async Task<Stream> PostStreamAsync(
             string url,
             IDictionary<string, string> form,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
-            return await MakeRequestAsync(HttpMethod.Get, url,
-                response => response.Content.ReadAsStreamAsync(),
-                null, form, headers, proxy);
+            return await MakeRequestAsync(HttpMethod.Post, url,
+                async response =>
+                {
+                    MemoryStream copy = new MemoryStream();
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    await stream.CopyToAsync(copy, 1024, cancellationToken);
+                    copy.Position = 0L;
+                    return copy;
+                },
+                null, form, headers, proxy, cancellationToken);
         }
 
         public async Task<byte[]> PostBytesAsync(
             string url,
             IDictionary<string, string> form,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
         )
         {
-            return await MakeRequestAsync(HttpMethod.Get, url,
+            return await MakeRequestAsync(HttpMethod.Post, url,
                 response => response.Content.ReadAsByteArrayAsync(),
-                null, form, headers, proxy);
+                null, form, headers, proxy, cancellationToken);
         }
 
         private async Task<T> MakeRequestAsync<T>(
@@ -124,7 +155,8 @@ namespace MayoSolutions.Framework.Web
             string body = null,
             IDictionary<string, string> form = null,
             IDictionary<string, string> headers = null,
-            IWebProxy proxy = null
+            IWebProxy proxy = null,
+            CancellationToken cancellationToken = default
             )
         {
             HttpClientHandler httpClientHandler = new HttpClientHandler();
@@ -148,7 +180,7 @@ namespace MayoSolutions.Framework.Web
                     }
                     request.Content = content;
 
-                    using (HttpResponseMessage response = await httpClient.SendAsync(request))
+                    using (HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken))
                     {
                         return await handleResponse(response);
                     }
