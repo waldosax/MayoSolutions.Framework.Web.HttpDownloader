@@ -12,6 +12,18 @@ namespace MayoSolutions.Framework.Web
 {
     public class HttpDownloader : IHttpDownloader
     {
+        private readonly HttpDownloaderConfig _config;
+
+        public HttpDownloader()
+            : this(new HttpDownloaderConfig())
+        {
+
+        }
+
+        public HttpDownloader(HttpDownloaderConfig config)
+        {
+            _config = config ?? new HttpDownloaderConfig();
+        }
 
         public async Task<string> GetStringAsync(
             string url,
@@ -33,7 +45,7 @@ namespace MayoSolutions.Framework.Web
         )
         {
             return await MakeRequestAsync(HttpMethod.Get, url,
-                async response => 
+                async response =>
                 {
                     MemoryStream copy = new MemoryStream();
                     var stream = await response.Content.ReadAsStreamAsync();
@@ -163,6 +175,9 @@ namespace MayoSolutions.Framework.Web
             if (proxy != null) httpClientHandler.Proxy = new WebProxy($"{proxy.Host}:{proxy.Port}", false);
             using (HttpClient httpClient = new HttpClient(httpClientHandler))
             {
+                if (_config != null && _config.Timeout != null)
+                    httpClient.Timeout = _config.Timeout.Value;
+
                 using (HttpRequestMessage request = new HttpRequestMessage(method, url))
                 {
                     ConvertHeaders(request, headers);
